@@ -37,7 +37,6 @@ class ScaraKinematics:
             ).split(',')
         ]
 
-
         self.rails[0].setup_itersolve('scara_stepper_alloc', b'a',
             self.l1, self.l2, self.offset_x, self.offset_y, self.ecr)
         self.rails[1].setup_itersolve('scara_stepper_alloc', b'b',
@@ -120,6 +119,11 @@ class ScaraKinematics:
         xy_movement = (end_pos[0] != start_pos[0]) or (end_pos[1] != start_pos[1])
         if not xy_movement:
             return
+        
+        if end_pos[1] < 0.0:
+            raise self.printer.command_error(
+                "End position (%.1f, %.1f) is beyond y axis limit (%.1fmm < 0)" % 
+                (end_pos[0], end_pos[1], end_pos[1]))
         
         start_distance = math.sqrt(start_pos[0]**2 + start_pos[1]**2)
         end_distance = math.sqrt(end_pos[0]**2 + end_pos[1]**2)
