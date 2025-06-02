@@ -127,6 +127,7 @@ class ScaraKinematics:
                 "End position (%.1f, %.1f) is beyond y axis limit (%.1fmm < 0)" % 
                 (end_pos[0], end_pos[1], end_pos[1]))
             
+        end_distance = math.sqrt(end_pos[0]**2 + end_pos[1]**2)
         max_reach = self.l1 + self.l2
         
         if end_distance > max_reach:
@@ -146,8 +147,6 @@ class ScaraKinematics:
             raise self.printer.command_error(
                 "End position (%.1f, %.1f) is too close to the base (%.1fmm < %.1fmm)" % 
                 (end_pos[0], end_pos[1], end_distance, self.base_protection_radius))
-        
-        end_distance = math.sqrt(end_pos[0]**2 + end_pos[1]**2)
             
         speed_factor = 1.0
         if end_distance > max_reach - 0.999999999:
