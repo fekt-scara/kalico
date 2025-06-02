@@ -121,10 +121,8 @@ class ScaraKinematics:
         if not xy_movement:
             return
         
-        start_distance = math.sqrt((start_pos[0] - self.offset_x)**2 + 
-                                   (start_pos[1] - self.offset_y)**2)
-        end_distance = math.sqrt((end_pos[0] - self.offset_x)**2 + 
-                                 (end_pos[1] - self.offset_y)**2)
+        start_distance = math.sqrt(start_pos[0]**2 + start_pos[1]**2)
+        end_distance = math.sqrt(end_pos[0]**2 + end_pos[1]**2)
         min_distance = min(start_distance, end_distance)
         max_reach = self.l1 + self.l2
         
@@ -133,11 +131,8 @@ class ScaraKinematics:
                 "End position (%.1f, %.1f) is beyond arm reach (%.1fmm > %.1fmm)" % 
                 (end_pos[0], end_pos[1], end_distance, max_reach))
             
-        circle_center_x = self.l1 + self.offset_x
-        circle_center_y = 0.0 + self.offset_y
-            
         end_circle_distance = math.sqrt(
-            (end_pos[0] - circle_center_x)**2 + (end_pos[1] - circle_center_y)**2)
+            (end_pos[0] - self.l1)**2 + (end_pos[1] - 0.0)**2)
         
         if end_circle_distance < self.l2:
             raise self.printer.command_error(
