@@ -24,9 +24,11 @@ class ScaraKinematics:
         printer_config = config.getsection('printer')
         self.offset_x = printer_config.getfloat('offset_x', default=0.)
         self.offset_y = printer_config.getfloat('offset_y', default=0.)
-        self.ecr = printer_config.getfloat('ecr', default=0.)
+        self.ecr = printer_config.getfloat('ecr', default=1.)
         self.l1 = printer_config.getfloat('link1_length', above=0.)
         self.l2 = printer_config.getfloat('link2_length', above=0.)
+        self.base_protection_radius = printer_config.getfloat(
+            'base_protection_radius', default=60.0)
         self.l1_sq = self.l1**2
         self.l2_sq = self.l2**2
         self.limit_xy2 = -1
@@ -124,10 +126,7 @@ class ScaraKinematics:
             raise self.printer.command_error(
                 "End position (%.1f, %.1f) is beyond y axis limit (%.1fmm < 0)" % 
                 (end_pos[0], end_pos[1], end_pos[1]))
-        
-        start_distance = math.sqrt(start_pos[0]**2 + start_pos[1]**2)
-        end_distance = math.sqrt(end_pos[0]**2 + end_pos[1]**2)
-        min_distance = min(start_distance, end_distance)
+            
         max_reach = self.l1 + self.l2
         
         if end_distance > max_reach:
@@ -142,9 +141,16 @@ class ScaraKinematics:
             raise self.printer.command_error(
                 "End position (%.1f, %.1f) moves elbow too close to the base (%.1fmm < %.1fmm)" %
                 (end_pos[0], end_pos[1], end_circle_distance, self.l2))
+                        
+        if end_distance < self.base_protection_radius:
+            raise self.printer.command_error(
+                "End position (%.1f, %.1f) is too close to the base (%.1fmm < %.1fmm)" % 
+                (end_pos[0], end_pos[1], end_distance, self.base_protection_radius))
+        
+        end_distance = math.sqrt(end_pos[0]**2 + end_pos[1]**2)
             
         speed_factor = 1.0
-        if min_distance > max_reach - 0.999999999:
+        if end_distance > max_reach - 0.999999999:
             speed_factor = 0.0001
         else:
             return
