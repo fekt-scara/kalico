@@ -35,8 +35,8 @@ scara_stepper_calc_position(struct stepper_kinematics* sk,
     struct scara_stepper* ss = container_of(sk, struct scara_stepper, sk);
     struct coord c = move_get_coord(m, move_time);
     
-    double x = c.x + ss->offset_x;
-    double y = c.y + ss->offset_y;
+    double x = c.x - ss->offset_x;
+    double y = c.y - ss->offset_y;
 
     double cos_q2 = (x * x + y * y - ss->L1 * ss->L1 - ss->L2 * ss->L2) / (2 * ss->L1 * ss->L2);
     double q2 = (fabs(cos_q2) < 1e-9) ? acos(1e-6) : acos(cos_q2);
