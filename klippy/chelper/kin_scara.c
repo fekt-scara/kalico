@@ -45,7 +45,7 @@ scara_stepper_calc_position(struct stepper_kinematics* sk,
     if (ss->type == 'a')
         return q1;
     else {
-        return q2 + (q1 / 3.0);
+        return q2 + (q1 / ss->ecr);
     }
 }
 
